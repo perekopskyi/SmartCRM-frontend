@@ -1,12 +1,21 @@
 import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+import { supabase } from '../lib/supabase';
+import { env } from '../config/env';
 
 export const api = axios.create({
-  baseURL: API_URL,
+  baseURL: env.API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+});
+
+// Add auth token to all requests
+api.interceptors.request.use(async (config) => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session?.access_token) {
+    config.headers.Authorization = `Bearer ${session.access_token}`;
+  }
+  return config;
 });
 
 // Customer API

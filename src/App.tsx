@@ -5,11 +5,13 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import { DollarSign, Plus, ShoppingCart, TrendingUp, Users } from 'lucide-react';
+import { DollarSign, LogOut, Plus, ShoppingCart, TrendingUp, Users } from 'lucide-react';
 import { useState } from 'react';
 import { CustomerModal } from './components/CustomerModal';
 import { CustomerTable } from './components/CustomerTable';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import { StatsCard } from './components/StatsCard';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import type { Customer } from './services/api';
 import { customersApi, statsApi } from './services/api';
 
@@ -19,6 +21,7 @@ function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<Customer | undefined>();
   const queryClientInstance = useQueryClient();
+  const { user, signOut } = useAuth();
 
   // Fetch stats
   const { data: stats } = useQuery({
@@ -99,15 +102,28 @@ function Dashboard() {
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold text-gray-900">Furniture CRM</h1>
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              type="button"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              Add Customer
-            </button>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Furniture CRM</h1>
+              <p className="text-sm text-gray-600 mt-1">{user?.email}</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                type="button"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Add Customer
+              </button>
+              <button
+                onClick={() => signOut()}
+                className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+                type="button"
+              >
+                <LogOut className="w-5 h-5 mr-2" />
+                Sign Out
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -158,7 +174,11 @@ function Dashboard() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Dashboard />
+      <AuthProvider>
+        <ProtectedRoute>
+          <Dashboard />
+        </ProtectedRoute>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

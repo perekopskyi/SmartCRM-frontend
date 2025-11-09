@@ -5,9 +5,12 @@ import { z } from 'zod';
 import type { Customer } from '../services/api';
 
 const customerSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  email: z.string().email('Invalid email address'),
-  phone: z.string().min(1, 'Phone is required'),
+  first_name: z.string().min(1, 'First name is required'),
+  last_name: z.string().min(1, 'Last name is required'),
+  email: z.string().optional(),
+  phone: z.string().optional(),
+  address: z.string().optional(),
+  notes: z.string().optional(),
 });
 
 type CustomerFormData = z.infer<typeof customerSchema>;
@@ -25,10 +28,19 @@ export function CustomerModal({ customer, onClose, onSubmit }: CustomerModalProp
     formState: { errors },
   } = useForm<CustomerFormData>({
     resolver: zodResolver(customerSchema),
-    defaultValues: customer || {
-      name: '',
-      email: '',
+    defaultValues: customer ? {
+      first_name: customer.firstName || '',
+      last_name: customer.lastName || '',
+      email: customer.email || '',
+      phone: customer.phone || '',
+      address: customer.address || '',
+      notes: customer.notes || '',
+    } : {
+      first_name: '',
+      last_name: '',
       phone: '',
+      address: '',
+      notes: '',
     },
   });
 
@@ -45,17 +57,32 @@ export function CustomerModal({ customer, onClose, onSubmit }: CustomerModalProp
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
-          <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-              Name
-            </label>
-            <input
-              {...register('name')}
-              type="text"
-              id="name"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 mb-1">
+                First Name *
+              </label>
+              <input
+                {...register('first_name')}
+                type="text"
+                id="first_name"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.first_name && <p className="mt-1 text-sm text-red-600">{errors.first_name.message}</p>}
+            </div>
+
+            <div>
+              <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 mb-1">
+                Last Name *
+              </label>
+              <input
+                {...register('last_name')}
+                type="text"
+                id="last_name"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.last_name && <p className="mt-1 text-sm text-red-600">{errors.last_name.message}</p>}
+            </div>
           </div>
 
           <div>
@@ -82,6 +109,32 @@ export function CustomerModal({ customer, onClose, onSubmit }: CustomerModalProp
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>}
+          </div>
+
+          <div>
+            <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
+              Address
+            </label>
+            <input
+              {...register('address')}
+              type="text"
+              id="address"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {errors.address && <p className="mt-1 text-sm text-red-600">{errors.address.message}</p>}
+          </div>
+
+          <div>
+            <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
+              Notes
+            </label>
+            <textarea
+              {...register('notes')}
+              id="notes"
+              rows={3}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {errors.notes && <p className="mt-1 text-sm text-red-600">{errors.notes.message}</p>}
           </div>
 
           <div className="flex justify-end space-x-3 pt-4">

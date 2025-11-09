@@ -19,12 +19,29 @@ api.interceptors.request.use(async (config) => {
 });
 
 // Customer API
+export interface CreateCustomerData {
+  first_name: string;
+  last_name: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  notes?: string;
+}
+
+export interface UpdateCustomerData {
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  notes?: string;
+}
+
 export const customersApi = {
   getAll: () => api.get('/customers'),
   getOne: (id: number) => api.get(`/customers/${id}`),
-  create: (data: { name: string; email: string; phone: string }) => api.post('/customers', data),
-  update: (id: number, data: Partial<{ name: string; email: string; phone: string }>) =>
-    api.put(`/customers/${id}`, data),
+  create: (data: CreateCustomerData) => api.post('/customers', data),
+  update: (id: number, data: UpdateCustomerData) => api.put(`/customers/${id}`, data),
   delete: (id: number) => api.delete(`/customers?id=${id}`),
 };
 
@@ -36,11 +53,19 @@ export const statsApi = {
 // Types
 export interface Customer {
   id: number;
-  name: string;
-  email: string;
-  phone: string;
-  totalOrders: number;
-  totalSpent: number;
+  firstName?: string;
+  lastName?: string;
+  name?: string; // Combined name from backend (for list view)
+  email?: string;
+  phone?: string;
+  address?: string;
+  balance?: number;
+  notes?: string;
+  totalOrders?: number;
+  totalSpent?: number;
+  lastOrderDate?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Stats {

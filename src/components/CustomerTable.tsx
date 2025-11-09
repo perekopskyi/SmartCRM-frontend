@@ -23,6 +23,9 @@ export function CustomerTable({ customers, onEdit, onDelete }: CustomerTableProp
               Phone
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Balance
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Orders
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -40,16 +43,21 @@ export function CustomerTable({ customers, onEdit, onDelete }: CustomerTableProp
                 <div className="text-sm font-medium text-gray-900">{customer.name}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-500">{customer.email}</div>
+                <div className="text-sm text-gray-500">{customer.email || '-'}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-500">{customer.phone}</div>
+                <div className="text-sm text-gray-500">{customer.phone || '-'}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-900">{customer.totalOrders}</div>
+                <div className={`text-sm font-medium ${(customer.balance || 0) > 0 ? 'text-green-600' : (customer.balance || 0) < 0 ? 'text-red-600' : 'text-gray-900'}`}>
+                  ${(customer.balance || 0).toFixed(2)}
+                </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="text-sm text-gray-900">${customer.totalSpent.toFixed(2)}</div>
+                <div className="text-sm text-gray-900">{customer.totalOrders || 0}</div>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <div className="text-sm text-gray-900">${(customer.totalSpent || 0).toFixed(2)}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <button
